@@ -15,6 +15,8 @@ def sum_month(sum_year, sum_month):
         return 'Введите год'
     if sum_month == '':
         return 'Введите месяц'
+    if int(sum_month) > 12:
+        return 'Введите месяц'
     if len(sum_month) == 1:
         m = list(sum_month)
         m.insert(0, '0')
@@ -27,7 +29,7 @@ def sum_month(sum_year, sum_month):
     if a:
         return round(a, 2)
     else:
-        return 'Отсуствуют платежи\n за выбранный месяц'
+        return 'Отсуствуют платежи за выбранный месяц'
 
 
 def res_add(res_name, res_surname, inn_client, res_city, res_email):
@@ -37,28 +39,28 @@ def res_add(res_name, res_surname, inn_client, res_city, res_email):
     if any(map(str.isdigit, res_surname)) or len(res_surname) <= 3:
         return 'Введите фамилию'
     if not any(map(str.isdigit, inn_client)):
-        return 'Введите ИНН\n из 12 цифр'
+        return 'Введите ИНН из 12 цифр'
     elif len(inn_client) < 12:
-        return 'Введите ИНН\n из 12 цифр'
+        return 'Введите ИНН из 12 цифр'
     if any(map(str.isdigit, res_city)) or len(res_city) <= 3:
         return 'Введите город'
     if re.search(regex, res_email):
         SQLfunks.create_client(res_name, res_surname,inn_client, res_city, res_email)
         clean_client()
-        return 'добавлен в бд'
+        return 'Клиент добавлен'
     else:
         return 'Неправильная почта'
 
 
 def res_add_trans(debit_account, credit_account, total_transfer):
     if not any(map(str.isdigit, debit_account)):
-        return 'Введите счет-дебет\n из 20 цифр'
+        return 'Введите счет-дебет из 20 цифр'
     elif len(debit_account) < 20:
-        return 'Введите корректоный счет\n из 20 символов'
+        return 'Введите корректоный счет из 20 символов'
     if not any(map(str.isdigit, credit_account)):
         return 'Введите счет-кредит из 20 цифр'
     elif len(debit_account) <= 3:
-        return 'Введите корректоный счет\n из 20 символов'
+        return 'Введите корректоный счет из 20 символов'
     if total_transfer:
         SQLfunks.create_transfer(debit_account, credit_account, total_transfer)
         clean_trans()
@@ -127,24 +129,25 @@ def add_client():
 def res_add_invoice(invoice, bank_name, city_invoice,innclient, bik):
     pass
     if not any(map(str.isdigit, invoice)):
-        return 'Введите счет\n из 20 цифр'
+        return 'Введите счет из 20 цифр'
     if len(invoice) != 20:
-        return 'Введите корректоный счет\n из 20 символов'
+        return 'Введите корректоный счет из 20 символов'
     if len(bank_name) <= 0:
         return 'Введите банк'
     if any(map(str.isdigit, city_invoice)) or len(city_invoice) <= 3:
         return 'Введите город'
     if not any(map(str.isdigit, innclient)):
-        return 'Введите ИНН\n из 12 цифр'
+        return 'Введите ИНН из 12 цифр'
     if len(innclient) != 12:
-        return 'Введите ИНН\n из 12 цифр'
+        return 'Введите ИНН из 12 цифр'
     if not any(map(str.isdigit, bik)):
-        return 'Введите Бик\n из 9 цифр'
+        return 'Введите Бик из 9 цифр'
     if len(bik) != 9:
-        return 'Введите Бик\n из 9 цифр'
+        return 'Введите Бик из 9 цифр'
     else:
         SQLfunks.create_invoice(invoice, bank_name, city_invoice, innclient, bik)
         clean_invoice()
+        return 'Счет добавлен'
 
 
 def add_invoice():
@@ -193,9 +196,9 @@ month.grid(row=1, column=0, sticky=W)
 monthField = Entry(bg='white', font=30)
 monthField.grid(row=1, column=1)
 btn = Button(text='Вычислить сумму', command=get_sum)
-btn.grid(row=2, column=0, sticky=W, pady=5)
+btn.grid(row=2, column=0, sticky=W, pady=5,rowspan=3)
 info = Label(text='Сумма за месяц', font=20)
-info.grid(row=2, column=1, sticky=E + W,rowspan=2)
+info.grid(row=2, column=1,padx=5, pady=5,sticky=W,columnspan=2)
 
 # Секция доабвления клиента
 name = Label(text='Введите имя', font=40)
@@ -223,7 +226,7 @@ emailField.grid(row=10, column=1)
 btn_add_client = Button(text='Добавить клиента', command=add_client)
 btn_add_client.grid(row=11, column=0, sticky=W, pady=5)
 added = Label(text='Заполните поля', font=40)
-added.grid(row=11, column=1, pady=5)
+added.grid(row=11, column=1,padx=5, pady=5,sticky=W,columnspan=2)
 
 # Секция добавления перевода
 deb = Label(text='счет-дебет', font=40)
@@ -241,7 +244,7 @@ sum_trans.grid(row=14, column=1)
 add_trans = Button(text='Добавить перевод', command=add_trans)
 add_trans.grid(row=15, column=0, sticky=W, pady=5)
 added_trans = Label(text='Заполните поля', font=40)
-added_trans.grid(row=15, column=1, pady=5)
+added_trans.grid(row=15, column=1,padx=5, pady=5,sticky=W,columnspan=2)
 
 # Секция доавбления счета
 
@@ -275,7 +278,7 @@ bikField.grid(row=20, column=1)
 inn_btn = Button(text='Добавить счет', command=add_invoice)
 inn_btn.grid(row=21, column=0, sticky=W, pady=5)
 added_invoice = Label(text='Заполните поля', font=40)
-added_invoice.grid(row=21, column=1, pady=5)
+added_invoice.grid(row=21, column=1,padx=5, pady=5,sticky=W,columnspan=2)
 
 # Секция вывода таблиц
 show_clients = Button(text='Посмотреть таблицу\nклиентов', command=show_clients)
