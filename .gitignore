@@ -3,5 +3,5 @@ Test.db
 .idea
 venv/
 *venv*/
-build
-dist
+*build*
+*dist*
