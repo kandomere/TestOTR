@@ -1,13 +1,14 @@
-import sqlite3 as sql
 import SQLfunks
 from tkinter import *
 import re
+import sqlite3 as sql
 
 # Создаем главный объект (по сути окно приложения)
 root = Tk()
 
 
 def sum_month(sum_year, sum_month):
+    """Выводим сумму или ошибки"""
     if sum_year == "":
         return 'Введите год'
     if len(sum_year) != 4:
@@ -29,26 +30,6 @@ def sum_month(sum_year, sum_month):
         return 'Отсуствуют платежи\n за выбранный месяц'
 
 
-# Эта функция срабатывает при нажатии на кнопку "Посмотреть погоду"
-
-
-def get_sum():
-    # Полученные данные добавляем в текстовую надпись для отображения пользователю
-
-    info['text'] = sum_month(yearField.get(), monthField.get())
-
-
-def clean():
-    nameField.delete(0, END)
-    nameField.insert(0, "")
-    surnameField.delete(0, END)
-    surnameField.insert(0, "")
-    cityField.delete(0, END)
-    cityField.insert(0, "")
-    emailField.delete(0, END)
-    emailField.insert(0, "")
-
-
 def res_add(res_name, res_surname, res_city, res_email):
     regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
     if any(map(str.isdigit, res_name)) or len(res_name) <= 3:
@@ -59,10 +40,59 @@ def res_add(res_name, res_surname, res_city, res_email):
         return 'Введите город'
     if re.search(regex, res_email):
         SQLfunks.create_client(res_name, res_surname, res_city, res_email)
-        clean()
+        clean_client()
         return 'добавлен в бд'
     else:
         return 'Неправильная почта'
+
+
+def res_add_trans(debit_account, credit_account, total_transfer):
+    if not any(map(str.isdigit, debit_account)):
+        return 'Введите счет-дебет\n из 20 цифр'
+    elif len(debit_account) < 20:
+        return 'Введите корректоный счет\n из 20 символов'
+    if not any(map(str.isdigit, credit_account)):
+        return 'Введите счет-кредит из 20 цифр'
+    elif len(debit_account) <= 3:
+        return 'Введите корректоный счет\n из 20 символов'
+    if total_transfer:
+        SQLfunks.create_transfer(debit_account, credit_account, total_transfer)
+        clean_trans()
+        return 'Перевод добавлен'
+    else:
+        return 'Введите сумму перевода'
+
+
+def get_sum():
+    """Обработка нажатия"""
+    info['text'] = sum_month(yearField.get(), monthField.get())
+
+
+def add_trans():
+    debit_account = deb.get()
+    credit_account = credit.get()
+    total_transfer = sum_trans.get()
+    added_trans['text'] = res_add_trans(debit_account, credit_account, total_transfer)
+
+
+def clean_client():
+    nameField.delete(0, END)
+    nameField.insert(0, "")
+    surnameField.delete(0, END)
+    surnameField.insert(0, "")
+    cityField.delete(0, END)
+    cityField.insert(0, "")
+    emailField.delete(0, END)
+    emailField.insert(0, "")
+
+
+def clean_trans():
+    deb.delete(0, END)
+    deb.insert(0, "")
+    credit.delete(0, END)
+    credit.insert(0, "")
+    sum_trans.delete(0, END)
+    sum_trans.insert(0, "")
 
 
 def add_client():
@@ -73,6 +103,18 @@ def add_client():
     added['text'] = res_add(add_name, add_surname, add_city, add_email)
 
 
+def show_clients():
+    SQLfunks.show_tables()
+
+
+def show_invoice():
+    SQLfunks.show_invoice()
+
+
+def show_transfer():
+    SQLfunks.show_transfers()
+
+
 # Настройки главного окна
 
 # Указываем фоновый цвет
@@ -80,12 +122,13 @@ def add_client():
 # Указываем название окна
 root.title('Тест БД')
 # Указываем размеры окна
-root.geometry('800x900')
+root.geometry('800x600')
 # Делаем невозможным менять размеры окна
 root.resizable(width=False, height=False)
 
 # Создаем фрейм (область для размещения других объектов)
 # Указываем к какому окну он принадлежит, какой у него фон и какая обводка
+
 
 # Для суммы за месяц
 year = Label(text='Введите год', font=40)
@@ -133,7 +176,38 @@ emailField.grid(row=9, column=1)
 btn_add_client = Button(text='Добавить клиента', command=add_client)
 btn_add_client.grid(row=10, column=0, sticky=W, pady=5)
 
-added = Label(text='', font=40)
+added = Label(text='Заполните поля', font=40)
 added.grid(row=10, column=1, pady=5)
 
+deb = Label(text='счет-дебет', font=40)
+deb.grid(row=11, column=0, sticky=W)
+
+deb = Entry(bg='white', font=20)
+deb.grid(row=11, column=1, padx=10)
+
+credit = Label(text='счет-кредит', font=40)
+credit.grid(row=12, column=0, sticky=W)
+
+credit = Entry(bg='white', font=30)
+credit.grid(row=12, column=1)
+
+sum_trans = Label(text='сумма проводки', font=40)
+sum_trans.grid(row=13, column=0, sticky=W)
+
+sum_trans = Entry(bg='white', font=30)
+sum_trans.grid(row=13, column=1)
+
+add_trans = Button(text='Добавить перевод', command=add_trans)
+add_trans.grid(row=14, column=0, sticky=W, pady=5)
+
+added_trans = Label(text='Заполните поля', font=40)
+added_trans.grid(row=14, column=1, pady=5)
+
+show_clients = Button(text='Посмотреть таблицу\nклиентов', command=show_clients)
+show_clients.grid(row=15, column=0, sticky=W, pady=5)
+# show_clients = Button(text='Посмотреть таблицу\nсчетов', command=show_invoice)
+# show_clients.grid(row=15, column=1, sticky=W, pady=5)
+show_clients = Button(text='Посмотреть таблицу\nтранзакций', command=show_transfer)
+show_clients.grid(row=15, column=2, sticky=W, pady=1)
+SQLfunks.create_databases()
 root.mainloop()

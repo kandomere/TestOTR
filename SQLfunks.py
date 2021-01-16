@@ -1,7 +1,9 @@
 import sqlite3 as sql
 import datetime
 from random import randint, uniform
-
+import sqlite3
+import tkinter as tk
+import tkinter.ttk as ttk
 
 def create_databases():
     """Создание трех таблиц"""
@@ -15,11 +17,11 @@ def create_databases():
                     CUSTOMER_ID INT references clients(client_id))""")
 
         cur.execute("""CREATE TABLE IF NOT EXISTS transfer (transfer_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date_formation DATETIME  NOT NULL , debit_account INTEGER,credit_account INTEGER, 
+        date_formation DATETIME  NOT NULL , debit_account VARCHAR(20),credit_account VARCHAR(20), 
                       total_transfer FLOAT,year_month TEXT)""")
 
 
-def create_transfer():
+def create_transfer(debit_account,credit_account,total_transfer):
     """добавлние значений в Проводок"""
     date = datetime.datetime.now().strftime("%Y-%m-%d")
     year_month = datetime.datetime.now().strftime("%Y_%m")
@@ -27,7 +29,7 @@ def create_transfer():
         cur = db.cursor()
         cur.execute("INSERT INTO transfer (transfer_id, date_formation,"
                     " debit_account,credit_account,total_transfer,year_month) VALUES (null,?,?,?,?,?)",
-                    (date, randint(100, 1000), randint(100, 1000), uniform(0.11, 1000.99), year_month))
+                    (date, debit_account, credit_account, total_transfer, year_month))
     db.commit()
 
 
@@ -48,3 +50,129 @@ def create_invoice(invoice, bank_name, city, inn, bik):
                     " VALUES (null,?,?,?,?,?,?)",
                     (invoice, bank_name, city, inn, bik))
     db.commit()
+
+
+def show_tables():
+    class Table(tk.Frame):
+        def __init__(self, parent=None, headings=tuple(), rows=tuple()):
+            super().__init__(parent)
+
+            table = ttk.Treeview(self, show="headings", selectmode="browse")
+            table["columns"] = headings
+            table["displaycolumns"] = headings
+
+            for head in headings:
+                table.heading(head, text=head, anchor=tk.CENTER)
+                table.column(head, anchor=tk.CENTER)
+
+            for row in rows:
+                table.insert('', tk.END, values=tuple(row))
+
+            scrolltable = tk.Scrollbar(self, command=table.yview)
+            table.configure(yscrollcommand=scrolltable.set)
+            scrolltable.pack(side=tk.RIGHT, fill=tk.Y)
+            table.pack(expand=tk.YES, fill=tk.BOTH)
+
+    data = (",")
+    with sqlite3.connect('test.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM clients")
+        data = (row for row in cursor.fetchall())
+
+    root = tk.Tk()
+    table = Table(root, headings=('№', 'Имя', 'Фамилия', 'Город', 'Почта'), rows=data)
+    table.pack(expand=tk.YES, fill=tk.BOTH)
+
+def show_invoice():
+    class Table(tk.Frame):
+        def __init__(self, parent=None, headings=tuple(), rows=tuple()):
+            super().__init__(parent)
+
+            table = ttk.Treeview(self, show="headings", selectmode="browse")
+            table["columns"] = headings
+            table["displaycolumns"] = headings
+
+            for head in headings:
+                table.heading(head, text=head, anchor=tk.CENTER)
+                table.column(head, anchor=tk.CENTER)
+
+            for row in rows:
+                table.insert('', tk.END, values=tuple(row))
+
+            scrolltable = tk.Scrollbar(self, command=table.yview)
+            table.configure(yscrollcommand=scrolltable.set)
+            scrolltable.pack(side=tk.RIGHT, fill=tk.Y)
+            table.pack(expand=tk.YES, fill=tk.BOTH)
+
+    data = (",")
+    with sqlite3.connect('test.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM invoice")
+        data = (row for row in cursor.fetchall())
+
+    root = tk.Tk()
+    table = Table(root, headings=('№', 'Счет', 'Банк', 'Город', 'ИНН', 'Бик'), rows=data)
+    table.pack(expand=tk.YES, fill=tk.BOTH)
+
+
+def show_invoices():
+    class Table(tk.Frame):
+        def __init__(self, parent=None, headings=tuple(), rows=tuple()):
+            super().__init__(parent)
+
+            table = ttk.Treeview(self, show="headings", selectmode="browse")
+            table["columns"] = headings
+            table["displaycolumns"] = headings
+
+            for head in headings:
+                table.heading(head, text=head, anchor=tk.CENTER)
+                table.column(head, anchor=tk.CENTER)
+
+            for row in rows:
+                table.insert('', tk.END, values=tuple(row))
+
+            scrolltable = tk.Scrollbar(self, command=table.yview)
+            table.configure(yscrollcommand=scrolltable.set)
+            scrolltable.pack(side=tk.RIGHT, fill=tk.Y)
+            table.pack(expand=tk.YES, fill=tk.BOTH)
+
+    data = (",")
+    with sqlite3.connect('test.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM transfer")
+        data = (row for row in cursor.fetchall())
+
+    root = tk.Tk()
+    table = Table(root, headings=('№', 'Счет', 'Банк', 'Город', 'ИНН', 'Бик'), rows=data)
+    table.pack(expand=tk.YES, fill=tk.BOTH)
+
+def show_transfers():
+    class Table(tk.Frame):
+        def __init__(self, parent=None, headings=tuple(), rows=tuple()):
+            super().__init__(parent)
+
+            table = ttk.Treeview(self, show="headings", selectmode="browse")
+            table["columns"] = headings
+            table["displaycolumns"] = headings
+
+            for head in headings:
+                table.heading(head, text=head, anchor=tk.CENTER)
+                table.column(head, anchor=tk.CENTER)
+
+            for row in rows:
+                table.insert('', tk.END, values=tuple(row))
+
+            scrolltable = tk.Scrollbar(self, command=table.yview)
+            table.configure(yscrollcommand=scrolltable.set)
+            scrolltable.pack(side=tk.RIGHT, fill=tk.Y)
+            table.pack(expand=tk.YES, fill=tk.BOTH)
+
+    data = (",")
+    with sqlite3.connect('test.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM transfer")
+        data = (row for row in cursor.fetchall())
+
+    root = tk.Tk()
+    table = Table(root, headings=('№', 'Дата','Счет-дебит', 'Счет-кредит', 'Сумма'), rows=data)
+    table.pack(expand=tk.YES, fill=tk.BOTH)
