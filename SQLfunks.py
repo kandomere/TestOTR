@@ -81,6 +81,7 @@ def show_tables():
         data = (row for row in cursor.fetchall())
 
     root = tk.Tk()
+    root.title("Клиенты")
     table = Table(root, headings=('№', 'Имя', 'Фамилия', 'ИНН', 'Город','Почта'), rows=data)
     table.pack(expand=tk.YES, fill=tk.BOTH)
 
@@ -113,6 +114,7 @@ def show_invoices():
         data = (row for row in cursor.fetchall())
 
     root = tk.Tk()
+    root.title("Счета")
     table = Table(root, headings=('№', 'Счет', 'Банк', 'Город', 'ИНН', 'Бик'), rows=data)
     table.pack(expand=tk.YES, fill=tk.BOTH)
 
@@ -145,5 +147,6 @@ def show_transfers():
         data = (row for row in cursor.fetchall())
 
     root = tk.Tk()
+    root.title("Переводы")
     table = Table(root, headings=('№', 'Дата', 'Счет-дебит', 'Счет-кредит', 'Сумма'), rows=data)
     table.pack(expand=tk.YES, fill=tk.BOTH)
