@@ -7,9 +7,50 @@ import sqlite3 as sql
 root = Tk()
 
 
+def clean_client():
+    """чистка ячеек клиента"""
+    nameField.delete(0, END)
+    nameField.insert(0, "")
+    surnameField.delete(0, END)
+    surnameField.insert(0, "")
+    cityField.delete(0, END)
+    cityField.insert(0, "")
+    emailField.delete(0, END)
+    emailField.insert(0, "")
+    inn_clientField.delete(0, END)
+    inn_clientField.insert(0, "")
+
+
+def clean_trans():
+    """чистка ячеек перевода"""
+    deb.delete(0, END)
+    deb.insert(0, "")
+    credit.delete(0, END)
+    credit.insert(0, "")
+    sum_trans.delete(0, END)
+    sum_trans.insert(0, "")
+
+
+def clean_invoice():
+    """чистка ячеек счетов"""
+    invoiceField.delete(0, END)
+    invoiceField.insert(0, '')
+    bank_nameField.delete(0, END)
+    bank_nameField.insert(0, "")
+    cityInvoiceField.delete(0, END)
+    cityInvoiceField.insert(0, '')
+
+    bikField.delete(0, END)
+    bikField.insert(0, '')
+    innclientField.delete(0, END)
+    innclientField.insert(0, '')
+
+
 def sum_month_show(sum_year: str, sum_month: str) -> float or str:
     """Выводим сумму или ошибки"""
-    if sum_year == "":
+    try:
+        sum_year == "" or isinstance(int(sum_year), int)
+    except ValueError:
         return 'Введите год'
     if len(sum_year) != 4:
         return 'Введите год'
@@ -33,6 +74,7 @@ def sum_month_show(sum_year: str, sum_month: str) -> float or str:
 
 
 def res_add(res_name, res_surname, inn_client, res_city, res_email):
+    """Доавления клиента"""
     regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
     if any(map(str.isdigit, res_name)) or len(res_name) <= 3:
         return 'Введите корректоное имя'
@@ -40,7 +82,7 @@ def res_add(res_name, res_surname, inn_client, res_city, res_email):
         return 'Введите фамилию'
     if not any(map(str.isdigit, inn_client)):
         return 'Введите ИНН из 12 цифр'
-    elif len(inn_client) < 12:
+    elif len(inn_client) != 12:
         return 'Введите ИНН из 12 цифр'
     if any(map(str.isdigit, res_city)) or len(res_city) <= 3:
         return 'Введите город'
@@ -53,9 +95,10 @@ def res_add(res_name, res_surname, inn_client, res_city, res_email):
 
 
 def res_add_trans(debit_account, credit_account, total_transfer):
+    """Доавления перевода"""
     if not any(map(str.isdigit, debit_account)):
         return 'Введите счет-дебет из 20 цифр'
-    elif len(debit_account) < 20:
+    elif len(debit_account) != 20:
         return 'Введите корректоный счет из 20 символов'
     if not any(map(str.isdigit, credit_account)):
         return 'Введите счет-кредит из 20 цифр'
@@ -69,65 +112,7 @@ def res_add_trans(debit_account, credit_account, total_transfer):
         return 'Введите сумму перевода'
 
 
-def get_sum():
-    """Обработка нажатия"""
-    info['text'] = sum_month_show(yearField.get(), monthField.get())
-
-
-def add_trans():
-    debit_account = deb.get()
-    credit_account = credit.get()
-    total_transfer = sum_trans.get()
-    added_trans['text'] = res_add_trans(debit_account, credit_account, total_transfer)
-
-
-def clean_client():
-    nameField.delete(0, END)
-    nameField.insert(0, "")
-    surnameField.delete(0, END)
-    surnameField.insert(0, "")
-    cityField.delete(0, END)
-    cityField.insert(0, "")
-    emailField.delete(0, END)
-    emailField.insert(0, "")
-    inn_clientField.delete(0, END)
-    inn_clientField.insert(0, "")
-
-
-def clean_trans():
-    deb.delete(0, END)
-    deb.insert(0, "")
-    credit.delete(0, END)
-    credit.insert(0, "")
-    sum_trans.delete(0, END)
-    sum_trans.insert(0, "")
-
-
-def clean_invoice():
-    invoiceField.delete(0, END)
-    invoiceField.insert(0, '')
-    bank_nameField.delete(0, END)
-    bank_nameField.insert(0, "")
-    cityInvoiceField.delete(0, END)
-    cityInvoiceField.insert(0, '')
-
-    bikField.delete(0, END)
-    bikField.insert(0, '')
-    innclientField.delete(0, END)
-    innclientField.insert(0, '')
-
-
-def add_client():
-    add_name = nameField.get()
-    add_surname = surnameField.get()
-    add_city = cityField.get()
-    add_email = emailField.get()
-    inn_client = inn_clientField.get()
-    added['text'] = res_add(add_name, add_surname, inn_client, add_city, add_email)
-
-
 def res_add_invoice(invoice, bank_name, city_invoice, innclient, bik):
-    pass
     if not any(map(str.isdigit, invoice)):
         return 'Введите счет из 20 цифр'
     if len(invoice) != 20:
@@ -150,7 +135,30 @@ def res_add_invoice(invoice, bank_name, city_invoice, innclient, bik):
         return 'Счет добавлен'
 
 
+def get_sum():
+    """Обработка нажатия и вывод суммы"""
+    info['text'] = sum_month_show(yearField.get(), monthField.get())
+
+
+def add_trans():
+    """Обработка нажатия и вывод статуса ввода"""
+    debit_account = deb.get()
+    credit_account = credit.get()
+    total_transfer = sum_trans.get()
+    added_trans['text'] = res_add_trans(debit_account, credit_account, total_transfer)
+
+
+def add_client():
+    add_name = nameField.get()
+    add_surname = surnameField.get()
+    add_city = cityField.get()
+    add_email = emailField.get()
+    inn_client = inn_clientField.get()
+    added['text'] = res_add(add_name, add_surname, inn_client, add_city, add_email)
+
+
 def add_invoice():
+    """Обрабокта кнопки и вывод статсуа доавления счета"""
     invoice = invoiceField.get()
     bank_name = bank_nameField.get()
     city_invoice = cityInvoiceField.get()
@@ -160,14 +168,17 @@ def add_invoice():
 
 
 def show_clients():
+    """Вывод таблицы кинетов"""
     SQLfunks.show_tables()
 
 
 def show_invoice():
+    """Вывод таблицы счетов"""
     SQLfunks.show_invoices()
 
 
 def show_transfer():
+    """Вывод таблицы переводов"""
     SQLfunks.show_transfers()
 
 
