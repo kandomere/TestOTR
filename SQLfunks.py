@@ -1,7 +1,5 @@
 import sqlite3 as sql
 import datetime
-from random import randint, uniform
-import sqlite3
 import tkinter as tk
 import tkinter.ttk as ttk
 
@@ -34,26 +32,28 @@ def create_transfer(debit_account, credit_account, total_transfer):
     db.commit()
 
 
-def create_client(name, surname,inn, city, email):
+def create_client(name, surname, inn, city, email):
     """Создание клиента"""
     with sql.connect('Test.db') as db:
         cur = db.cursor()
         cur.execute("INSERT INTO clients (client_id,name, surname,inn, city,email) VALUES (null,?,?,?,?,?)",
-                    (name, surname,inn, city, email))
+                    (name, surname, inn, city, email))
     db.commit()
 
 
-def create_invoice(invoice, bank_name, city,inn_client,bik,):
+def create_invoice(invoice, bank_name, city, inn_client, bik, ):
     """Добавление счета"""
     with sql.connect('Test.db') as db:
         cur = db.cursor()
         cur.execute("INSERT INTO invoice (invoice_id,invoice, bank_name, city,CUSTOMER_ID,bik)"
                     " VALUES (null,?,?,?,?,?)",
-                    (invoice, bank_name, city,inn_client,bik))
+                    (invoice, bank_name, city, inn_client, bik))
     db.commit()
 
 
 def show_tables():
+    """Вывод таблицы клиентов"""
+
     class Table(tk.Frame):
         def __init__(self, parent=None, headings=tuple(), rows=tuple()):
             super().__init__(parent)
@@ -75,18 +75,20 @@ def show_tables():
             table.pack(expand=tk.YES, fill=tk.BOTH)
 
     data = (",")
-    with sqlite3.connect('test.db') as connection:
+    with sql.connect('test.db') as connection:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM clients")
         data = (row for row in cursor.fetchall())
 
     root = tk.Tk()
     root.title("Клиенты")
-    table = Table(root, headings=('№', 'Имя', 'Фамилия', 'ИНН', 'Город','Почта'), rows=data)
+    table = Table(root, headings=('№', 'Имя', 'Фамилия', 'ИНН', 'Город', 'Почта'), rows=data)
     table.pack(expand=tk.YES, fill=tk.BOTH)
 
 
 def show_invoices():
+    """Вывод счетов"""
+
     class Table(tk.Frame):
         def __init__(self, parent=None, headings=tuple(), rows=tuple()):
             super().__init__(parent)
@@ -108,7 +110,7 @@ def show_invoices():
             table.pack(expand=tk.YES, fill=tk.BOTH)
 
     data = (",")
-    with sqlite3.connect('test.db') as connection:
+    with sql.connect('test.db') as connection:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM invoice")
         data = (row for row in cursor.fetchall())
@@ -120,6 +122,8 @@ def show_invoices():
 
 
 def show_transfers():
+    """Вывод переводов"""
+
     class Table(tk.Frame):
         def __init__(self, parent=None, headings=tuple(), rows=tuple()):
             super().__init__(parent)
@@ -141,7 +145,7 @@ def show_transfers():
             table.pack(expand=tk.YES, fill=tk.BOTH)
 
     data = (",")
-    with sqlite3.connect('test.db') as connection:
+    with sql.connect('test.db') as connection:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM transfer")
         data = (row for row in cursor.fetchall())

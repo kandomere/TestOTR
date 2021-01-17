@@ -7,7 +7,7 @@ import sqlite3 as sql
 root = Tk()
 
 
-def sum_month(sum_year, sum_month):
+def sum_month_show(sum_year: str, sum_month: str) -> float or str:
     """Выводим сумму или ошибки"""
     if sum_year == "":
         return 'Введите год'
@@ -45,7 +45,7 @@ def res_add(res_name, res_surname, inn_client, res_city, res_email):
     if any(map(str.isdigit, res_city)) or len(res_city) <= 3:
         return 'Введите город'
     if re.search(regex, res_email):
-        SQLfunks.create_client(res_name, res_surname,inn_client, res_city, res_email)
+        SQLfunks.create_client(res_name, res_surname, inn_client, res_city, res_email)
         clean_client()
         return 'Клиент добавлен'
     else:
@@ -71,7 +71,7 @@ def res_add_trans(debit_account, credit_account, total_transfer):
 
 def get_sum():
     """Обработка нажатия"""
-    info['text'] = sum_month(yearField.get(), monthField.get())
+    info['text'] = sum_month_show(yearField.get(), monthField.get())
 
 
 def add_trans():
@@ -126,7 +126,7 @@ def add_client():
     added['text'] = res_add(add_name, add_surname, inn_client, add_city, add_email)
 
 
-def res_add_invoice(invoice, bank_name, city_invoice,innclient, bik):
+def res_add_invoice(invoice, bank_name, city_invoice, innclient, bik):
     pass
     if not any(map(str.isdigit, invoice)):
         return 'Введите счет из 20 цифр'
@@ -156,7 +156,7 @@ def add_invoice():
     city_invoice = cityInvoiceField.get()
     bik = bikField.get()
     innclient = innclientField.get()
-    added_invoice['text'] = res_add_invoice(invoice, bank_name, city_invoice,innclient,bik)
+    added_invoice['text'] = res_add_invoice(invoice, bank_name, city_invoice, innclient, bik)
 
 
 def show_clients():
@@ -178,7 +178,7 @@ def show_transfer():
 # Указываем название окна
 root.title('Тест БД')
 # Указываем размеры окна
-root.geometry('800x600')
+root.geometry('500x570')
 # Делаем невозможным менять размеры окна
 root.resizable(width=False, height=False)
 
@@ -196,15 +196,16 @@ month.grid(row=1, column=0, sticky=W)
 monthField = Entry(bg='white', font=30)
 monthField.grid(row=1, column=1)
 btn = Button(text='Вычислить сумму', command=get_sum)
-btn.grid(row=2, column=0, sticky=W, pady=5,rowspan=3)
+btn.grid(row=2, column=0, sticky=W, pady=5, rowspan=3)
 info = Label(text='Сумма за месяц', font=20)
-info.grid(row=2, column=1,padx=5, pady=5,sticky=W,columnspan=2)
+info.grid(row=2, column=1, padx=5, pady=5, sticky=W, columnspan=2)
 
 # Секция доабвления клиента
 name = Label(text='Введите имя', font=40)
 name.grid(row=6, column=0, sticky=W)
 nameField = Entry(bg='white', font=20)
 nameField.grid(row=6, column=1, padx=10)
+
 surname = Label(text='Введите фамилию', font=40)
 surname.grid(row=7, column=0, sticky=W)
 surnameField = Entry(bg='white', font=30)
@@ -219,14 +220,16 @@ city = Label(text='Введите город', font=40)
 city.grid(row=9, column=0, sticky=W)
 cityField = Entry(bg='white', font=30)
 cityField.grid(row=9, column=1)
+
 email = Label(text='Введите почту', font=40)
 email.grid(row=10, column=0, sticky=W)
 emailField = Entry(bg='white', font=30)
 emailField.grid(row=10, column=1)
+
 btn_add_client = Button(text='Добавить клиента', command=add_client)
 btn_add_client.grid(row=11, column=0, sticky=W, pady=5)
 added = Label(text='Заполните поля', font=40)
-added.grid(row=11, column=1,padx=5, pady=5,sticky=W,columnspan=2)
+added.grid(row=11, column=1, padx=5, pady=5, sticky=W, columnspan=2)
 
 # Секция добавления перевода
 deb = Label(text='счет-дебет', font=40)
@@ -244,10 +247,9 @@ sum_trans.grid(row=14, column=1)
 add_trans = Button(text='Добавить перевод', command=add_trans)
 add_trans.grid(row=15, column=0, sticky=W, pady=5)
 added_trans = Label(text='Заполните поля', font=40)
-added_trans.grid(row=15, column=1,padx=5, pady=5,sticky=W,columnspan=2)
+added_trans.grid(row=15, column=1, padx=5, pady=5, sticky=W, columnspan=2)
 
 # Секция доавбления счета
-
 invoiceField = Label(text='счет', font=40)
 invoiceField.grid(row=16, column=0, sticky=W)
 invoiceField = Entry(bg='white', font=20)
@@ -273,19 +275,17 @@ bikField.grid(row=20, column=0, sticky=W)
 bikField = Entry(bg='white', font=30)
 bikField.grid(row=20, column=1)
 
-
-
 inn_btn = Button(text='Добавить счет', command=add_invoice)
 inn_btn.grid(row=21, column=0, sticky=W, pady=5)
 added_invoice = Label(text='Заполните поля', font=40)
-added_invoice.grid(row=21, column=1,padx=5, pady=5,sticky=W,columnspan=2)
+added_invoice.grid(row=21, column=1, padx=5, pady=5, sticky=W, columnspan=2)
 
 # Секция вывода таблиц
 show_clients = Button(text='Посмотреть таблицу\nклиентов', command=show_clients)
-show_clients.grid(row=22, column=0, sticky=W+E, pady=5)
+show_clients.grid(row=22, column=0, sticky=W + E, pady=5)
 show_clients = Button(text='Посмотреть таблицу\nсчетов', command=show_invoice)
-show_clients.grid(row=22, column=1, sticky=W+E, pady=5)
+show_clients.grid(row=22, column=1, sticky=W + E, pady=5)
 show_clients = Button(text='Посмотреть таблицу\nтранзакций', command=show_transfer)
-show_clients.grid(row=22, column=2, sticky=W+E, pady=1)
+show_clients.grid(row=22, column=2, sticky=W + E, pady=1)
 SQLfunks.create_databases()
 root.mainloop()
